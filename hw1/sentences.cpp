@@ -71,7 +71,7 @@ void genHelper(vector<vector<string> >& words,
     }
     else
     {
-        for(int i = 0; i<words[currentOption].size(); i++) //iterate through current word options
+        for(int i = 0; (unsigned)i<words[currentOption].size(); i++) //iterate through current word options
         {
             sentence = sentence + words[currentOption][i];
             int len = words[currentOption][i].length(); //keep track of length added to sentence

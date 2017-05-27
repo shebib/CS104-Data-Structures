@@ -21,12 +21,12 @@ int main(int argc, char * argv[])
 
     readTweets(argv[1], tweets); //read tweets to vector
 
-    for(int i = 0; i<tweets.size(); i++) //parse users
+    for(int i = 0; (unsigned)i<tweets.size(); i++) //parse users
     {
         string tmp = tweets[i];
         int pos = 0;
         pos = tmp.find("@");
-        while(pos != string::npos)
+        while(pos != -1)
         {
             stringstream ss(tmp.substr(pos));
             string usr;
@@ -36,12 +36,12 @@ int main(int argc, char * argv[])
         }
     }
 
-    for(int i = 0; i<tweets.size(); i++) //parse hashtags
+    for(int i = 0; (unsigned)i<tweets.size(); i++) //parse hashtags
     {
         string tmp = tweets[i];
         int pos = 0;
         pos = tmp.find("#");
-        while(pos != string::npos)
+        while(pos != -1)
         {
             stringstream ss(tmp.substr(pos));
             string hash;
@@ -54,12 +54,12 @@ int main(int argc, char * argv[])
     //output
     cout << "1. Number of tweets=" << tweets.size() << endl;
     cout << "2. Unique users" << endl;
-    for(int i = 0; i<users.size(); i++)
+    for(int i = 0; (unsigned)i<users.size(); i++)
     {
         cout << users[i] << endl;
     }
     cout << "3. Unique hashtags" << endl;
-    for(int i = 0; i<hashtags.size(); i++)
+    for(int i = 0; (unsigned)i<hashtags.size(); i++)
     {
         cout << hashtags[i] << endl;
     }
@@ -87,7 +87,7 @@ void readTweets(char* filename, vector<string>& tweets)
 
 bool push_back_unique(vector<string>& vec, string str)
 {
-    for(int i = 0; i<vec.size(); i++)
+    for(int i = 0; (unsigned)i<vec.size(); i++)
     {
         if(vec[i].compare(str) == 0) {//check string
             return false;
