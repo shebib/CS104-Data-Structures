@@ -1,5 +1,5 @@
-#Homework 2
-##Daniel Shebib
+# Homework 2
+## Daniel Shebib
 
 Contains:
 * hw2.txt - answers to questions
