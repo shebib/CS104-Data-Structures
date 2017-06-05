@@ -1,0 +1,30 @@
+Problem 1
+a.
+The README.md is unchanged, and up to date with origin master. It is already being tracked, and will read as unmodified.
+b.
+README.md is modified, fun_problem.txt is untracked
+c.
+both are staged
+d.
+both were committed and then modified again, and so both are now modified and tracked (but not staged)
+e.
+README.md is now staged, fun_problem.txt has been reverted to the state it was in on the last commit (before adding so far so good)
+f.
+README.md now has a modifiecation  ("markdown is too easy") staged, and another modification ("fancy git move") that is not staged for commit.
+This happened because a change was made and staged, and then another change was made without committing the first change or staging the second change.
+Problem 2
+a.
+tab
+b.
+[clean]rm -f ./*.o *~ shape1 shape2 ./*~
+[shape1]make will attempt to call shape1.o: (it is listed as a dependency), but because there is no target 'shape1.o' make will fail and not run any actions
+c.
+A PHONY rule simply tells make that the rule being invoked is not a target file to be created
+d.
+makefile and Makefil are appropriate
+Problem 3
+1. A list of strings containing the names of colleges that won, in order. this would be a simple way to keep track of who won each year, given the starting year of the list and the year to be looked up.
+2. A map with a string as the key (the name of the person) and an int as the SSN (the value to be looked up). This would allow easy and fast lookup of an SSN given a name.
+3. A map with a string as the key (2-letter postal code), and a set as the value. the set would contain all of the zip codes. The map makes sense to look up the set, and the set would be the best way to check if a zip code exists for that state (because order doesn't matter, but the existence of the zip code in the set is important)..
+4. A map with the key being the user and the value being a list of strings containing the URL's. When a user visits a website, his list is accessed through the map and new websites are added to his list. The list is traveresed to show the website history, in order.
+5. A 2-D array with booleans. True denotes a space and False denotes a wall. This is the fastest way to access any element, and the smallest way to store a maze with only walls and spaces (only two possibilities)
