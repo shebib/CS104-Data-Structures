@@ -104,7 +104,7 @@ void TwitEng::addTweet(std::string& username, DateTime& dt, std::string& text)
   //add to DM feed
   if(dmFeeds_.find(username) == dmFeeds_.end())
   {
-    std::vector<std::string> add;
+    std::vector<Tweet*> add;
     dmFeeds_.insert(std::make_pair(username, add));
   }
   if(tmp->isDM()) //add first @ to dmFeeds_
@@ -112,7 +112,7 @@ void TwitEng::addTweet(std::string& username, DateTime& dt, std::string& text)
     std::string dmname = tmp->text().substr(1, tmp->text().find(" ")-1);
     if(dmFeeds_.find(dmname) == dmFeeds_.end())
     {
-      std::vector<std::string> add; 
+      std::vector<Tweet*> add; 
       dmFeeds_.insert(std::make_pair(dmname, add));
     }
     dmFeeds_.find(dmname)->second.push_back(tmp);
@@ -127,7 +127,7 @@ void TwitEng::addTweet(std::string& username, DateTime& dt, std::string& text)
       std::string dmname = tmp->text().substr(n+1, sp-n-1);
       if(dmFeeds_.find(dmname) == dmFeeds_.end())
       {
-        std::vector<std::string> add;
+        std::vector<Tweet*> add;
         dmFeeds_.insert(std::make_pair(dmname, add));
       }
       dmFeeds_.find(dmname)->second.push_back(tmp);
@@ -140,7 +140,7 @@ bool TwitEng::parse(char* filename)
 {
   std::ifstream fin(filename);
    if(!fin.good()) {//check input file
-     std::cout << "Error: Input file not found";
+     std::cout << "Error: Input file not found\n";
        return true;
    }
    std::stringstream ss;
@@ -326,7 +326,7 @@ std::vector<std::string> TwitEng::getUserNames()
   return out;
 }
 
-  std::vector<std::string> TwitEng::getFollowing(std::string usr)
+std::vector<std::string> TwitEng::getFollowing(std::string usr)
 {
   std::vector<std::string> out;
   User* user = findUser(usr);
@@ -338,8 +338,77 @@ std::vector<std::string> TwitEng::getUserNames()
   return out;
 }
 
-  const std::vector<Tweet*> & TwitEng::getDMFeed(std::string name)
+const std::string TwitEng::getDMFeed(std::string name)
 {
-  std::sort(dmFeeds_.find(name)->second.begin(), dmFeeds_.find(name)->second.begin());
-  return(dmFeeds_.find(name)->second);
+  std::sort(dmFeeds_.find(name)->second.begin(), dmFeeds_.find(name)->second.begin(), TweetComp());
+  std::string out = "";
+  if(dmFeeds_.find(name) == dmFeeds_.end())
+    return "";
+  std::vector<Tweet*> dmOut = dmFeeds_.find(name)->second;
+  std::stringstream ss;
+  for(unsigned int i = 0; i < dmOut.size(); i++)
+  {
+    ss << *dmOut[i] << std::endl;
+    std::string tmp = "";
+    while(ss >> tmp) { out+=tmp+" ";}
+  }
+  return out;
+}
+
+const std::string TwitEng::getFeed(std::string name)
+{
+  std::vector<Tweet*> feedTweets = this->findUser(name)->getFeed();
+  std::sort(feedTweets.begin(), feedTweets.end(), TweetComp());
+  std::string out = "";
+  std::stringstream ss;
+  for(unsigned int i = 0; i < feedTweets.size(); i++)
+  {
+    ss << *feedTweets[i] << std::endl;
+    std::string tmp = "";
+    while(ss >> tmp) { out+=tmp+" ";}
+    out += "\n";
+    ss.str("");
+    ss.clear();
+  }
+  return out;
+}
+
+  void TwitEng::saveToFile(std::string filename)
+{
+  const char* fname = filename.c_str();
+  std::ofstream fout(fname);
+  fout << usrs.size() << std::endl;
+  //output users and followings
+  for(std::map<std::string, User*>::iterator it = usrs.begin(); it != usrs.end(); it++)
+  {
+    fout << it->first << " ";
+    std::set<User*> followings = it->second->following();
+    for(std::set<User*>::iterator it2 = followings.begin(); it2 != followings.end(); it2++)
+    {
+      fout << (*it2)->name() << " ";
+    }
+    fout << "\b\n";
+  }
+  //output tweets
+  for(int i = 0; i < tweetSize_; i++)
+  {
+    fout << tweets_[i] << std::endl;
+  }
+}
+
+  const std::vector<std::string> TwitEng::searchTweets(std::vector<std::string>& terms, int strategy)
+{
+  std::vector<Tweet*> tweets = search(terms, strategy);
+  std::vector<std::string> out;
+  std::stringstream ss;
+  for(unsigned int i = 0; i < tweets.size(); i++)
+  {
+    out.push_back("");
+    ss << *(tweets[i]);
+    std::string tmp = "";
+    while(ss >> tmp) {out[i] += tmp + " ";}
+    ss.str("");
+    ss.clear();
+  }
+  return out;
 }
