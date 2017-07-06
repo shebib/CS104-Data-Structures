@@ -30,7 +30,8 @@ static void mHelp(std::vector<T>& arr, Comparator comp, int left, int right)
 /*
  * merge ll-lr and rl-rr by copying only ll-lr and then merging into arr
  */
-static void merge(std::vector<T>& arr, Comparator comp, int ll, int lr, int rl, int rr)
+static void merge(std::vector<T>& arr, Comparator comp, 
+    int ll, int lr, int rl, int rr)
 {
   std::vector<T> cp; //copy only left segment (which should be >= right segment)
   for(int i = ll; i <= lr; i++)
