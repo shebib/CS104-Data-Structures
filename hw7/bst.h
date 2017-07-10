@@ -160,8 +160,7 @@ Node<Key, Value>* Node<Key, Value>::getRight() const
 }
 
 /**
-* A setter for setting the parent of a node.
-*/
+* A setter for setting the parent of a node.  */
 template<typename Key, typename Value>
 void Node<Key, Value>::setParent(Node<Key, Value>* parent)
 {
@@ -281,6 +280,7 @@ Begin implementations for the BinarySearchTree::iterator class.
 template<typename Key, typename Value>
 BinarySearchTree<Key, Value>::iterator::iterator()
 {
+  mCurrent = NULL;
     // TODO
 }
 
@@ -290,6 +290,7 @@ BinarySearchTree<Key, Value>::iterator::iterator()
 template<typename Key, typename Value>
 BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value>* ptr)
 {
+  mCurrent = ptr;
     // TODO
 }
 
@@ -319,7 +320,7 @@ template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::iterator::operator==(const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
-    return false; // A dummy return value until you provide your implementation.
+    return (this->mCurrent == rhs.mCurrent);
 }
 
 /**
@@ -329,8 +330,8 @@ bool BinarySearchTree<Key, Value>::iterator::operator==(const BinarySearchTree<K
 template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::iterator::operator!=(const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
-    // TODO
-    return false; // A dummy return value until you provide your implementation.
+  //TODO
+  return (!(*this == rhs));
 }
 
 /**
@@ -340,6 +341,7 @@ template<typename Key, typename Value>
 typename BinarySearchTree<Key, Value>::iterator& BinarySearchTree<Key, Value>::iterator::operator=(const BinarySearchTree<Key, Value>::iterator& rhs)
 {
     // TODO
+    this->mCurrent = rhs.mCurrent;
     return *this; // A dummy return value until you provide your implementation.
 }
 
@@ -350,6 +352,23 @@ template<typename Key, typename Value>
 typename BinarySearchTree<Key, Value>::iterator& BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
+    if(this->mCurrent->getRight()!=NULL)
+    {
+      mCurrent = mCurrent->getRight();
+      while(mCurrent->getLeft() != NULL)
+      {
+        mCurrent = mCurrent->getLeft();
+      }
+    }
+    else
+    {
+      Node<Key, Value>* prev = mCurrent;
+      mCurrent = mCurrent->getParent();
+      while(mCurrent->getRight() == prev)
+      {
+        mCurrent = mCurrent->getParent();
+      }
+    }
     return *this; // A dummy return value until you provide your implementation.
 }
 
@@ -395,7 +414,12 @@ template<typename Key, typename Value>
 typename BinarySearchTree<Key, Value>::iterator BinarySearchTree<Key, Value>::begin()
 {
     // TODO
-    return iterator(); // A dummy return value until you provide your implementation.
+    Node<Key, Value>* ptr = mRoot;
+    while(ptr->getLeft() != NULL)
+    {
+      ptr = ptr->getLeft();
+    }
+    return iterator(ptr);
 }
 
 /**
@@ -405,7 +429,7 @@ template<typename Key, typename Value>
 typename BinarySearchTree<Key, Value>::iterator BinarySearchTree<Key, Value>::end()
 {
     // TODO
-    return iterator(); // A dummy return value until you provide your implementation.
+    return iterator(NULL);
 }
 
 /**
@@ -415,8 +439,26 @@ typename BinarySearchTree<Key, Value>::iterator BinarySearchTree<Key, Value>::en
 template<typename Key, typename Value>
 typename BinarySearchTree<Key, Value>::iterator BinarySearchTree<Key, Value>::find(const Key& key) const
 {
-    // TODO
-    return iterator(); // A dummy return value until you provide your implementation.
+  //TODO
+//  Node<Key, Value>* ptr = mRoot;
+//  while(true)
+//  {
+//    if(ptr->getKey() == key)
+//      return iterator(ptr);
+//    else if(ptr->getKey() < key)
+//    {
+//      if(ptr->getRight() == NULL)
+//        return end();
+//      ptr = ptr->getRight();
+//    }
+//    else
+//    {
+//      if(ptr->getLeft() == NULL)
+//        return end();
+//      ptr = ptr->getLeft();
+//    }
+//  }
+  return(iterator(internalFind(key)));
 }
 
 /**
