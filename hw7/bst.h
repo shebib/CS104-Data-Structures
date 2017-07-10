@@ -43,7 +43,7 @@ public:
 
 protected:
     std::pair<Key, Value> mItem;
-    Node<Key, Value>* mParent;
+    Node<Key, Value>* mParent; //NULL if root node
     Node<Key, Value>* mLeft;
     Node<Key, Value>* mRight;
 };

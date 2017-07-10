@@ -136,6 +136,8 @@ public:
 private:
     /* Helper functions are strongly encouraged to help separate the problem
        into smaller pieces. You should not need additional data members. */
+    void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n);
+    void eraseFix(AVLNode<Key, Value> *n, char diff);
 
     /* You should write these helpers for sure.  You may add others. */
     void rotateLeft (AVLNode<Key, Value> *n);
@@ -156,8 +158,20 @@ Begin implementations for the AVLTree class.
 */
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::insert(const std::pair<Key, Value>& keyValuePair)
-{
-    // TODO
+{ //TODO
+  if(mRoot = NULL)
+  {
+    mRoot = new AVLNode(keyValuePair.first, keyValuePair.second, NULL);
+  }
+  else if(internalFind(keyValuePair.first)!= NULL) {}
+  else
+  {
+
+
+
+
+
+    
 }
 
 /**
@@ -169,22 +183,65 @@ void AVLTree<Key, Value>::erase(const Key& key)
     // TODO
 }
 
+/*
+ * Recursive function to balance tree after insertion.
+ */
+void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
+{ //TODO
+
+}
+
+/*
+ * Recursive function to balance tree after erase.
+ */
+void eraseFix(AVLNode<Key, Value> *n, char diff)
+{ //TODO
+
+}
+
+
 /**
-* Rotates n down and to the left
+* Rotates n down and to the left. Does not update balance
 */
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::rotateLeft (AVLNode<Key, Value> *n)
-{
-    // TODO
+{ //TODO
+  AVLNode<Key, Value>* parent = n->getParent();
+  AVLNode<Key, Value>* left = n->getLeft();
+  AVLNode<Key, Value>* inner = n->getRight()->getLeft();
+  AVLNode<Key, Value>* y = n->getRight();
+  if(parent == NULL) {}
+  else if(parent->getLeft() == n)//connect y to parent
+    parent->setLeft(y);
+  else
+    parent->setRight(y);
+  y->setParent(parent);
+  y->setLeft(n);//move n (x)
+  n->setParent(y);
+  n->setRight(inner);//move inner
+  inner->setParent(n);
 }
 
 /**
-* Rotates n down and to the right
+* Rotates n down and to the right. Does not update balance
 */
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::rotateRight (AVLNode<Key, Value> *n)
-{
-    // TODO
+{ //TODO
+  AVLNode<Key, Value>* parent = n->getParent();
+  AVLNode<Key, Value>* right = n->getRight();
+  AVLNode<Key, Value>* inner = n->getLeft()->getRight();
+  AVLNode<Key, Value>* y = n->getLeft();
+  if(parent == NULL) {}
+  else if(parent->getLeft() == n)//connect y to parent
+    parent->setLeft(y);
+  else
+    parent->setRight(y);
+  y->setParent(parent);
+  y->setRight(n);//move n (x)
+  n->setParent(y);
+  n->setLeft(inner);//move inner
+  inner->setParent(n);
 }
 
 /**
