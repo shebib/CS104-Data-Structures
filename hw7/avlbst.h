@@ -361,8 +361,125 @@ void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
  */
 void eraseFix(AVLNode<Key, Value> *n, char diff)
 { //TODO
-  
-
+  if(n == NULL)
+    return;
+  AVLNode<Key, Value>* p = n->getParent();
+  int ndiff = 0;
+  if(p != NULL)
+  {
+    if(p->getParent()->leftChild() == p)
+      ndiff = 1;
+    else
+      ndiff = -1;
+  }
+  if(diff == -1)
+  {
+    if(n->getBalance() + diff == -2)
+    {
+      AVLNode<Key, Value>* c = n->getLeft();
+      if(c->getBalance() == -1 || c->getBalanc() == 0)
+      {
+        rotateRight(n);
+        if(c->getBalance() == -1)
+        {
+          n->setBalance(0);
+          c->setBalance(0);
+          removeFix(p, ndiff);
+        }
+        else if(c->getBalance(0))
+        {
+          n->setBalance(-1);
+          c->setBalance(1);
+        }
+      }
+      else if(c->getBalance(1))
+      {
+        AVLNode<Key, Value>* g = c->getRight();
+        rotateLeft(c);
+        rotateRight(n);
+        if(g->getBalance() == 1)
+        {
+          n->setBalance(0);
+          c->setBalance(-1);
+          g->setBalance(0);
+        }
+        else if(g->getBalance() == 0)
+        {
+          n->setBalance(0);
+          c->setBalance(0);
+          g->setBalance(0);
+        }
+        else if(g->getBalance() == -1)
+        {
+          n->setBalance(1);
+          c->setBalance(0);
+          g->setBalance(0);
+        }
+        removeFix(p, ndiff);
+      }
+    }
+    else if(n->getBalance() + diff == -1)
+      n->setBalance(-1);
+    else
+    {
+      n->setBalance(0);
+      removeFix(p, ndiff);
+    }
+  }
+  else
+  {
+    if(n->getBalance() + diff == 2)
+    {
+      AVLNode<Key, Value>* c = n->getRight();
+      if(c->getBalance() == 1 || c->getBalance() == 0)
+      {
+        rotateLeft(n);
+        if(c->getBalance() == 1)
+        {
+          n->setBalance(0);
+          c->setBalance(0);
+          removeFix(p, ndiff);
+        }
+        else if(c->getBalance(0))
+        {
+          n->setBalance(1);
+          c->setBalance(-1);
+        }
+      }
+      else if(c->getBalance(-1))
+      {
+        AVLNode<Key, Value>* g = c->getLeft();
+        rotateRight(c);
+        rotateLeft(n);
+        if(g->getBalance() == -1)
+        {
+          n->setBalance(0);
+          c->setBalance(1);
+          g->setBalance(0);
+        }
+        else if(g->getBalance() == 0)
+        {
+          n->setBalance(0);
+          c->setBalance(0);
+          g->setBalance(0);
+        }
+        else if(g->getBalance() == 1)
+        {
+          n->setBalance(-1);
+          c->setBalance(0);
+          g->setBalance(0);
+        }
+        removeFix(p, ndiff);
+      }
+    }
+    else if(n->getBalance() + diff == 1)
+      n->setBalance(1);
+    else
+    {
+      n->setBalance(0);
+      removeFix(p, ndiff);
+    }
+  }
 }
 
 
