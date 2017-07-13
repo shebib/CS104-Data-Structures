@@ -4,12 +4,12 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-//#include "avlbst.h"
+#include "avlbst.h"
 
 using namespace std;
 
 //Vars
-map<int, char> var; //holds t/f/unkonwn value for each var
+AVLTree<int, char> var; //holds t/f/unkonwn value for each var
 int size_; //number of variables
 int trials_; //number of clauses
 vector<vector<int>* > instr; //instructions
@@ -98,15 +98,15 @@ bool runTest(vector<int>* clause)
     if(tmp< 0)
     {
       tmp = tmp*-1;
-      if(var[tmp] == -1) 
+      if(var.find(tmp)->second == -1) 
         return true;
-      return (!var[tmp]);
+      return (!var.find(tmp)->second);
     }
     else
     {
-      if(var[tmp] == -1)
+      if(var.find(tmp)->second == -1)
         return true;
-      return (var[tmp]);
+      return (var.find(tmp)->second);
     }
   }
   for(unsigned int i = 0 ; i < clause->size(); i++)
@@ -128,8 +128,8 @@ bool runTest(vector<int>* clause)
         var2f = true;
       }
 
-      char var1c = var[var1];
-      char var2c = var[var2];
+      char var1c = var.find(var1)->second;
+      char var2c = var.find(var2)->second;
       if(var1f)
       {
         if(var1c == 0)
@@ -145,12 +145,10 @@ bool runTest(vector<int>* clause)
           var2c = 0;
       }
 
-      if(var1c == -1 || var2c == -1) {}
-      else if(var1c || var2c)
-      {
-        cout << "true" <<endl;
+      if(var1c == -1 || var2c == -1) 
         return true;
-      }
+      else if(var1c || var2c)
+        return true;
     }
   }
   return false;
@@ -172,13 +170,12 @@ bool solve(int curr)
     bool csolved = true;
     if(curr == size_+1)
       return true; //breakout
-    if(var[curr] == 1)
+    if(var.find(curr)->second == 1)
     {
-      var[curr] = -1;
+      var.find(curr)->second = -1;
       return false; //backtrack
     }
-    var[curr] = var[curr]+1;
-    cout << (int)var[curr] << endl;
+    var.find(curr)->second = var.find(curr)->second+1;
     for(int i = 0; i < trials_; i++)
     {
       if(!runTest(instr[i]))
@@ -209,6 +206,6 @@ void outputAns(char* filename, bool success)
   }
   for(int i = 1; i <= size_; i++)
   {
-    fout << i << " = " << (int)var[i] << "\n";
+    fout << i << " = " << (int)var.find(i)->second << "\n";
   }
 }

@@ -366,7 +366,10 @@ typename BinarySearchTree<Key, Value>::iterator& BinarySearchTree<Key, Value>::i
       mCurrent = mCurrent->getParent();
       while(mCurrent->getRight() == prev)
       {
+        prev = mCurrent;
         mCurrent = mCurrent->getParent();
+        if(mCurrent == NULL)
+          return *this;
       }
     }
     return *this; // A dummy return value until you provide your implementation.
@@ -415,6 +418,8 @@ typename BinarySearchTree<Key, Value>::iterator BinarySearchTree<Key, Value>::be
 {
     // TODO
     Node<Key, Value>* ptr = mRoot;
+    if(ptr == NULL)
+      return end();
     while(ptr->getLeft() != NULL)
     {
       ptr = ptr->getLeft();

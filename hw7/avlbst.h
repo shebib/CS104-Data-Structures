@@ -159,20 +159,20 @@ Begin implementations for the AVLTree class.
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::insert(const std::pair<Key, Value>& keyValuePair)
 { //TODO
-  if(mRoot = NULL)
+  if(this->mRoot == NULL)
   {
-    mRoot = new AVLNode(keyValuePair.first, keyValuePair.second, NULL);
+    this->mRoot = new AVLNode<Key, Value>(keyValuePair.first, keyValuePair.second, NULL);
   }
-  else if(internalFind(keyValuePair.first)!= NULL) {}
+  else if(this->internalFind(keyValuePair.first)!= NULL) {}
   else
   {
     Key key = keyValuePair.first;
-    AVLNode<Key, Value>* curr = mRoot;
-    AVLNode<Key, Value>* prev = mRoot;
+    AVLNode<Key, Value>* curr = static_cast<AVLNode<Key,Value>*>(this->mRoot);
+    AVLNode<Key, Value>* prev = static_cast<AVLNode<Key,Value>*>(this->mRoot);
     bool left = true;
     while (curr)
     {
-        else if (key < curr->getKey())
+        if (key < curr->getKey())
         {
           prev = curr;
           curr = curr->getLeft();
@@ -187,21 +187,25 @@ void AVLTree<Key, Value>::insert(const std::pair<Key, Value>& keyValuePair)
     }
     if(left)
     {
-      prev->setLeft(new ALVNode(key, keyValuePair.second, prev));
+      prev->setLeft(new AVLNode<Key, Value>(key, keyValuePair.second, prev));
       if(prev->getBalance() == 0)
       {
         prev->setBalance(-1);
-        insertFix(prev, prev->left);
+        insertFix(prev, prev->getLeft());
       }
+      else
+        prev->setBalance(0);
     }
     else
     {
-      prev->setRight(new ALVNode(key, keyValuePair.second, prev));
+      prev->setRight(new AVLNode<Key, Value>(key, keyValuePair.second, prev));
       if(prev->getBalance() == 0)
       {
         prev->setBalance(1);
-        insertFix(prev, prev->right);
+        insertFix(prev, prev->getRight());
       }
+      else
+        prev->setBalance(0);
     }
   }
 }
@@ -212,7 +216,7 @@ void AVLTree<Key, Value>::insert(const std::pair<Key, Value>& keyValuePair)
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::erase(const Key& key)
 { //TODO
-  AVLNode<Key, Value>* n = internalFind(key);
+  AVLNode<Key, Value>* n = static_cast<AVLNode<Key,Value>*>(this->internalFind(key));
   if(n->getLeft() != NULL && n->getRight() != NULL)
   {
     AVLNode<Key, Value>* tmp = n;
@@ -235,39 +239,54 @@ void AVLTree<Key, Value>::erase(const Key& key)
     }
     nodeSwap(tmp, n);
   }
-  AVLNode<Key, Value>* p = n.getParent();
+  AVLNode<Key, Value>* p = n->getParent();
   char diff = 0;
   if(p!= NULL)
   {
-    if(p.getLeft() == n)
+    if(p->getLeft() == n)
     {
       diff = 1;
-      p.setLeft(n.getLeft());
+      if(n->getLeft() != NULL)
+        p->setLeft(n->getLeft());
+      else if(n->getRight() != NULL)
+        p->setLeft(n->getRight());
+      else
+        p->setLeft(NULL);
+      if(p->getLeft() != NULL)
+        p->getLeft()->setParent(p);
     }
     else
     {
       diff = -1;
-      p.setRight(n.getRight());
+      if(n->getLeft() != NULL)
+        p->setRight(n->getLeft());
+      else if(n->getRight() != NULL)
+        p->setRight(n->getRight());
+      else
+        p->setRight(NULL);
+      if(p->getRight() != NULL)
+        p->getRight()->setParent(p);
     }
   }
   delete n;
-  removeFix(p, diff);
+  eraseFix(p, diff);
 }
 
 /*
  * Recursive function to balance tree after insertion.
  */
-void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
+template<typename Key, typename Value>
+void AVLTree<Key,Value>::insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
 { //TODO
   if(p == NULL || p->getParent() == NULL)
     return;
   AVLNode<Key, Value>* g = p->getParent();
   if(g->getLeft() == p) //Left child
   {
-    g.updateBalance(-1);
-    if(g.getBalance() == 0)
+    g->updateBalance(-1);
+    if(g->getBalance() == 0)
       return;
-    else if(g.getBalance() == -1)
+    else if(g->getBalance() == -1)
       insertFix(g, p);
     else //g.balance == -2
     {
@@ -287,33 +306,33 @@ void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
       {
         rotateLeft(p);
         rotateRight(g);
-        if(n.getBalance() == -1)
+        if(n->getBalance() == -1)
         {
-          p.setBalance(0);
-          g.setBalance(1);
-          n.setBalance(0);
+          p->setBalance(0);
+          g->setBalance(1);
+          n->setBalance(0);
         }
-        else if(n.getBalance() == 0)
+        else if(n->getBalance() == 0)
         {
-          p.setBalance(0);
-          g.setBalance(0);
-          n.setBalance(0);
+          p->setBalance(0);
+          g->setBalance(0);
+          n->setBalance(0);
         }
         else
         {
-          p.setBalance(-1);
-          g.setBalance(0);
-          n.setBalance(0);
+          p->setBalance(-1);
+          g->setBalance(0);
+          n->setBalance(0);
         }
       }
     }
   }
   else //right child
   {
-    g.updateBalance(1);
-    if(g.getBalance() == 0)
+    g->updateBalance(1);
+    if(g->getBalance() == 0)
       return;
-    else if(g.getBalance() == 1)
+    else if(g->getBalance() == 1)
       insertFix(g, p);
     else //g.balance == 2
     {
@@ -333,23 +352,23 @@ void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
       {
         rotateRight(p);
         rotateLeft(g);
-        if(n.getBalance() == 1)
+        if(n->getBalance() == 1)
         {
-          p.setBalance(0);
-          g.setBalance(-1);
-          n.setBalance(0);
+          p->setBalance(0);
+          g->setBalance(-1);
+          n->setBalance(0);
         }
-        else if(n.getBalance() == 0)
+        else if(n->getBalance() == 0)
         {
-          p.setBalance(0);
-          g.setBalance(0);
-          n.setBalance(0);
+          p->setBalance(0);
+          g->setBalance(0);
+          n->setBalance(0);
         }
         else
         {
-          p.setBalance(1);
-          g.setBalance(0);
-          n.setBalance(0);
+          p->setBalance(1);
+          g->setBalance(0);
+          n->setBalance(0);
         }
       }
     }
@@ -359,7 +378,8 @@ void insertFix(AVLNode<Key, Value> *p, AVLNode<Key, Value> *n)
 /*
  * Recursive function to balance tree after erase.
  */
-void eraseFix(AVLNode<Key, Value> *n, char diff)
+template<typename Key, typename Value>
+void AVLTree<Key,Value>::eraseFix(AVLNode<Key, Value> *n, char diff)
 { //TODO
   if(n == NULL)
     return;
@@ -367,32 +387,35 @@ void eraseFix(AVLNode<Key, Value> *n, char diff)
   int ndiff = 0;
   if(p != NULL)
   {
-    if(p->getParent()->leftChild() == p)
-      ndiff = 1;
-    else
-      ndiff = -1;
+    if(p->getParent() != NULL)
+    {
+      if(p->getParent()->getLeft() == p)
+        ndiff = 1;
+      else
+        ndiff = -1;
+    }
   }
   if(diff == -1)
   {
     if(n->getBalance() + diff == -2)
     {
       AVLNode<Key, Value>* c = n->getLeft();
-      if(c->getBalance() == -1 || c->getBalanc() == 0)
+      if(c->getBalance() == -1 || c->getBalance() == 0)
       {
         rotateRight(n);
         if(c->getBalance() == -1)
         {
           n->setBalance(0);
           c->setBalance(0);
-          removeFix(p, ndiff);
+          eraseFix(p, ndiff);
         }
-        else if(c->getBalance(0))
+        else if(c->getBalance() == 0)
         {
           n->setBalance(-1);
           c->setBalance(1);
         }
       }
-      else if(c->getBalance(1))
+      else if(c->getBalance() == 1)
       {
         AVLNode<Key, Value>* g = c->getRight();
         rotateLeft(c);
@@ -415,7 +438,7 @@ void eraseFix(AVLNode<Key, Value> *n, char diff)
           c->setBalance(0);
           g->setBalance(0);
         }
-        removeFix(p, ndiff);
+        eraseFix(p, ndiff);
       }
     }
     else if(n->getBalance() + diff == -1)
@@ -423,7 +446,7 @@ void eraseFix(AVLNode<Key, Value> *n, char diff)
     else
     {
       n->setBalance(0);
-      removeFix(p, ndiff);
+      eraseFix(p, ndiff);
     }
   }
   else
@@ -438,15 +461,15 @@ void eraseFix(AVLNode<Key, Value> *n, char diff)
         {
           n->setBalance(0);
           c->setBalance(0);
-          removeFix(p, ndiff);
+          eraseFix(p, ndiff);
         }
-        else if(c->getBalance(0))
+        else if(c->getBalance() == 0)
         {
           n->setBalance(1);
           c->setBalance(-1);
         }
       }
-      else if(c->getBalance(-1))
+      else if(c->getBalance() == 1)
       {
         AVLNode<Key, Value>* g = c->getLeft();
         rotateRight(c);
@@ -469,7 +492,7 @@ void eraseFix(AVLNode<Key, Value> *n, char diff)
           c->setBalance(0);
           g->setBalance(0);
         }
-        removeFix(p, ndiff);
+        eraseFix(p, ndiff);
       }
     }
     else if(n->getBalance() + diff == 1)
@@ -477,7 +500,7 @@ void eraseFix(AVLNode<Key, Value> *n, char diff)
     else
     {
       n->setBalance(0);
-      removeFix(p, ndiff);
+      eraseFix(p, ndiff);
     }
   }
 }
@@ -490,10 +513,10 @@ template<typename Key, typename Value>
 void AVLTree<Key, Value>::rotateLeft (AVLNode<Key, Value> *n)
 { //TODO
   AVLNode<Key, Value>* parent = n->getParent();
-  AVLNode<Key, Value>* left = n->getLeft();
   AVLNode<Key, Value>* inner = n->getRight()->getLeft();
   AVLNode<Key, Value>* y = n->getRight();
-  if(parent == NULL) {}
+  if(parent == NULL) 
+    this->mRoot = y;
   else if(parent->getLeft() == n)//connect y to parent
     parent->setLeft(y);
   else
@@ -502,7 +525,8 @@ void AVLTree<Key, Value>::rotateLeft (AVLNode<Key, Value> *n)
   y->setLeft(n);//move n (x)
   n->setParent(y);
   n->setRight(inner);//move inner
-  inner->setParent(n);
+  if(inner != NULL)
+    inner->setParent(n);
 }
 
 /**
@@ -512,10 +536,10 @@ template<typename Key, typename Value>
 void AVLTree<Key, Value>::rotateRight (AVLNode<Key, Value> *n)
 { //TODO
   AVLNode<Key, Value>* parent = n->getParent();
-  AVLNode<Key, Value>* right = n->getRight();
   AVLNode<Key, Value>* inner = n->getLeft()->getRight();
   AVLNode<Key, Value>* y = n->getLeft();
-  if(parent == NULL) {}
+  if(parent == NULL)
+    this->mRoot = y;
   else if(parent->getLeft() == n)//connect y to parent
     parent->setLeft(y);
   else
@@ -524,7 +548,8 @@ void AVLTree<Key, Value>::rotateRight (AVLNode<Key, Value> *n)
   y->setRight(n);//move n (x)
   n->setParent(y);
   n->setLeft(inner);//move inner
-  inner->setParent(n);
+  if(inner != NULL)
+    inner->setParent(n);
 }
 
 /**

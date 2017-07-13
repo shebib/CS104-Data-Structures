@@ -1,20 +1,16 @@
 CC       = g++
-CPPFLAGS = -Wall -g
-GTEST_LL = -I /usr/include/gtest/ -l gtest -l gtest_main -pthread
+CPPFLAGS = -Wall -g -std=c++11
 
-all: $(BIN_DIR) iteratorTest avlTest sat_solver
+all: $(BIN_DIR) avlTest sat_solver
 
-iteratorTest: iteratorTest.cpp 
-	$(CC) $(CPPFLAGS) $^ $(GTEST_LL) -o $@
-
-avlTest: avlTest.cpp
-	$(CC) $(CPPFLAGS) $^ $(GTEST_LL) -o $@
+avlTest: avlTest.cpp avlbst.h
+	$(CC) $(CPPFLAGS) $^ -o $@
 
 sat_solver: sat_solver.cpp
-	$(CC) $(CPPFLAGS) $^ $(GTEST_LL) -o $@
+	$(CC) $(CPPFLAGS) $^  -o $@
 
 .PHONY: clean
 
 clean:
-	rm iteratorTest avlTest sat_solver
+	rm avlTest sat_solver
 	-@echo "--- All Clean!---" 
