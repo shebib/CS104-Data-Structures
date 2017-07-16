@@ -1,6 +1,6 @@
 #include "twiteng.h"
 
-TwitEng::TwitEng()
+TwitEng::TwitEng() : trending_(2)
 {
   tweetSize_ = 0;
   tweets_ = new Tweet[10];
@@ -85,8 +85,8 @@ void TwitEng::addTweet(std::string& username, DateTime& dt, std::string& text)
         inserted = true;
         //increase count in map and heap
         int pnum = trendingNum_.find(tag)->second.num;
-        trending_.decreaseKey(TagData(tag, pnum), TagData(tag, pnum+1));
         trendingNum_.find(tag)->second.num++;
+        trending_.decreaseKey(TagData(tag, pnum), trendingNum_.find(tag)->second);
       }
       else if(tags[i].first.compare(tag) < 0)
       {
@@ -508,13 +508,19 @@ const std::vector<std::string> TwitEng::getTrending()
   if(size > 5)
     size = 5;
   std::vector<std::string> out;
+  std::vector<TagData> tArr;
   for(int i = 0; i < size; i++)
   {
-    TagData tmp = trending_.top();
+    tArr.push_back(trending_.top());
     trending_.pop();
-    out.push_back(tmp.tag);
-    trending_.push(tmp);
+    std::stringstream ss;
+    ss << "#" << tArr[i].tag << "(" << tArr[i].num << ")";
+    out.push_back(ss.str());
+    ss.str("");
+    ss.clear();
   }
+  for(int i = 0; i < size; i++)
+    trending_.push(tArr[i]);
   return out;
 }
   

@@ -38,6 +38,7 @@ class TwitDiag : public QDialog
     void saveFile();
     void searchDiagQuit();
     void saveComponents();
+    void refreshTrending();
 
   private:
     //Functions
@@ -47,6 +48,7 @@ class TwitDiag : public QDialog
     void createSearchDiag();
     void createUserColumn();
     void createFeedColumn();
+    void createTrending();
     void createDMFeedColumn();
     void createAddTweet();
     void createControls();
@@ -66,7 +68,9 @@ class TwitDiag : public QDialog
     QGroupBox* searchGroupbox;
     QGroupBox* userColumnGroupbox;
     QGroupBox* feedColumnGroupbox;
-    QGroupBox* dmFeedColumnGroupbox;
+    QGroupBox* dmFeedGroupbox;
+    QGroupBox* trendingGroupbox;
+    QGroupBox* rightColumnGroupbox;
     QGroupBox* topUserGroupbox;
     QGroupBox* addTweetGroupbox;
     QGroupBox* controlsGroupbox;
@@ -85,7 +89,10 @@ class TwitDiag : public QDialog
     QListWidget* searchText;
 
     QTextEdit* feedColumnText;
+
     QTextEdit* dmFeedColumnText;
+    QListWidget* trendingText;
+    QPushButton* refreshTrendingButton;
 
     QTextEdit* addTweetText;
     QPushButton* addTweetButton;

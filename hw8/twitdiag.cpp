@@ -14,6 +14,8 @@ TwitDiag::TwitDiag(TwitEng* eng) : QDialog()
   createUserColumn();
   createFeedColumn();
   updateFeed();
+  createTrending();
+  refreshTrending();
   createDMFeedColumn();
   updateDMFeed();
 
@@ -22,7 +24,7 @@ TwitDiag::TwitDiag(TwitEng* eng) : QDialog()
   QHBoxLayout* topUserLayout = new QHBoxLayout;
   topUserLayout->addWidget(userColumnGroupbox);
   topUserLayout->addWidget(feedColumnGroupbox);
-  topUserLayout->addWidget(dmFeedColumnGroupbox);
+  topUserLayout->addWidget(rightColumnGroupbox);
   topUserGroupbox->setLayout(topUserLayout);
 
   createAddTweet();
@@ -39,6 +41,7 @@ TwitDiag::TwitDiag(TwitEng* eng) : QDialog()
   connect(searchLineText, SIGNAL(returnPressed()), this, SLOT(searchResults()));
   connect(searchDiagQuitButton, SIGNAL(released()), this, SLOT(searchDiagQuit()));
   connect(connectButton, SIGNAL(released()), this, SLOT(saveComponents()));
+  connect(refreshTrendingButton, SIGNAL(released()), this, SLOT(refreshTrending()));
 
   //add everything to main layout
   QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -120,6 +123,7 @@ void TwitDiag::sendTweet()
   eng->addTweet(currUser, dt, tmptext);
   updateFeed();
   updateDMFeed();
+  refreshTrending();
   addTweetText->setText("");
 }
 
@@ -139,6 +143,17 @@ void TwitDiag::saveComponents()
 void TwitDiag::getNames()
 {
   names = eng->getUserNames(); 
+}
+
+void TwitDiag::refreshTrending()
+{
+  trendingText->clear();
+  std::vector<std::string> tags = eng->getTrending();
+  for(unsigned int i = 0; i < tags.size(); i++)
+  {
+    trendingText->addItem(QString::fromStdString(tags[i]));
+  }
+
 }
 
 void TwitDiag::createUserSelect()
@@ -267,14 +282,32 @@ void TwitDiag::updateFeed()
   feedColumnText->setText(QString::fromStdString(eng->getFeed(currUser)));
 }
 
+void TwitDiag::createTrending()
+{
+  trendingGroupbox = new QGroupBox(tr("Trending Hashtags"));
+  QVBoxLayout *layout = new QVBoxLayout;
+  trendingText = new QListWidget();
+  refreshTrendingButton = new QPushButton(tr("Refresh"));
+  layout->addWidget(trendingText);
+  layout->addWidget(refreshTrendingButton);
+  trendingGroupbox->setLayout(layout);
+}
+
 void TwitDiag::createDMFeedColumn()
 {
-  dmFeedColumnGroupbox = new QGroupBox(tr("Mention Feed"));
+  dmFeedGroupbox = new QGroupBox(tr("Mention Feed"));
   QVBoxLayout *layout = new QVBoxLayout;
   dmFeedColumnText = new QTextEdit();
   dmFeedColumnText->setReadOnly(true);
   layout->addWidget(dmFeedColumnText);
-  dmFeedColumnGroupbox->setLayout(layout);
+  dmFeedGroupbox->setLayout(layout);
+
+  rightColumnGroupbox = new QGroupBox();
+  rightColumnGroupbox->setFlat(true);
+  QVBoxLayout *rlayout = new QVBoxLayout;
+  rlayout->addWidget(dmFeedGroupbox);
+  rlayout->addWidget(trendingGroupbox);
+  rightColumnGroupbox->setLayout(rlayout);
 }
 
 void TwitDiag::updateDMFeed()

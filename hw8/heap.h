@@ -51,6 +51,7 @@ public:
     void bubUp(size_t loc);
     void bubDown(size_t loc);
     void swap(size_t a, size_t b);
+    void print(); //for debugging
 
 
  private:
@@ -90,6 +91,7 @@ template <typename T, typename KComparator, typename PComparator, typename Hashe
 void Heap<T,KComparator,PComparator,Hasher>::push( const T& item)
 {
   store_.push_back(item);
+  keyToLocation_.insert(std::make_pair(item, store_.size() - 1));
   bubUp(store_.size()-1);
 }
 
@@ -101,7 +103,7 @@ void Heap<T,KComparator,PComparator,Hasher>::decreaseKey(const T& old, const T& 
   if(!p(newVal, old))
     return;
   typename std::unordered_map<T, size_t, Hasher, KComparator>::iterator it =  keyToLocation_.find(old);
-  if(it = keyToLocation_.end())
+  if(it == keyToLocation_.end())
     return;
   int loc = it->second;
   store_[loc] = newVal;
@@ -131,6 +133,7 @@ void Heap<T,KComparator,PComparator,Hasher>::pop()
     }
 
     store_[0] = store_.back();
+    keyToLocation_.erase(store_.back());
     store_.pop_back();
     bubDown(0);
 }
@@ -187,6 +190,13 @@ void Heap<T,KComparator,PComparator,Hasher>::swap(size_t a, size_t b)
   keyToLocation_[store_[b]] = b;
 }
 
+
+template <typename T, typename KComparator, typename PComparator, typename Hasher >
+void Heap<T,KComparator,PComparator,Hasher>::print()
+{
+  for(int i = 0; i < store_.size(); i++)
+    std::cout << i << ":" << store_[i].num << store_[i].tag << std::endl;
+}
 
 #endif
 
