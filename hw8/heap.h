@@ -50,7 +50,7 @@ public:
      */
     void bubUp(size_t loc);
     void bubDown(size_t loc);
-    void swap(size_t a, size_t b)
+    void swap(size_t a, size_t b);
 
 
  private:
@@ -100,7 +100,10 @@ void Heap<T,KComparator,PComparator,Hasher>::decreaseKey(const T& old, const T& 
   PComparator p;
   if(!p(newVal, old))
     return;
-  size_t loc = keyToLocation[old];
+  typename std::unordered_map<T, size_t, Hasher, KComparator>::iterator it =  keyToLocation_.find(old);
+  if(it = keyToLocation_.end())
+    return;
+  int loc = it->second;
   store_[loc] = newVal;
   bubUp(loc);
 }
@@ -139,13 +142,14 @@ bool Heap<T,KComparator,PComparator,Hasher>::empty() const
     return store_.empty();
 }
 
-void bubUp(size_t loc)
+template <typename T, typename KComparator, typename PComparator, typename Hasher >
+void Heap<T,KComparator,PComparator,Hasher>::bubUp(size_t loc)
 {
-  size_t parent = ((loc-1)/m;
+  size_t parent = (loc-1)/m_;
   if(loc == 0)
     return;
   PComparator p;
-  else if(p(store_[loc],store_[parent]))
+  if(p(store_[loc],store_[parent]))
   {
     swap(loc, parent);
     bubUp(parent);
@@ -154,13 +158,14 @@ void bubUp(size_t loc)
     return;
 }
 
-void bubDown(size_t loc)
+template <typename T, typename KComparator, typename PComparator, typename Hasher >
+void Heap<T,KComparator,PComparator,Hasher>::bubDown(size_t loc)
 {
   T min = store_[loc];
   PComparator p;
-  for(int i = 0; i < m; i++)
+  for(int i = 0; i < m_; i++)
   {
-    size_t child = loc*m + 1 + i;
+    size_t child = loc*m_ + 1 + i;
     if(child > store_.size()-1)
       break;
     min = std::min(min, store_[child], p);
@@ -172,11 +177,14 @@ void bubDown(size_t loc)
   bubDown(swapLoc);
 }
 
-void swap(size_t a, size_t b)
+template <typename T, typename KComparator, typename PComparator, typename Hasher >
+void Heap<T,KComparator,PComparator,Hasher>::swap(size_t a, size_t b)
 {
   T tmp = store_[a];
   store_[a] = store_[b];
   store_[b] = tmp;
+  keyToLocation_[store_[a]] = a;
+  keyToLocation_[store_[b]] = b;
 }
 
 
