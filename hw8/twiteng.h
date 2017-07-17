@@ -66,12 +66,12 @@ class TwitEng
 
   bool registerUser(std::string username, std::string password);
 
-  std::map<std::string, std::vector<Tweet*> > dmFeeds_; //DEBUG
    private:
   //Variables
   std::vector<std::pair<std::string, std::set<Tweet*> > > tags;
   std::map<std::string, User*> usrs;
   Tweet* tweets_;
+  std::map<std::string, std::vector<Tweet*> > dmFeeds_;
   int tweetSize_;
   int tweetMaxSize_;
   Heap<TagData, TagStringEqual, TagIntGreater, TagStringHasher> trending_;
