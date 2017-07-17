@@ -62,11 +62,15 @@ class TwitEng
 
   const std::vector<std::string> getTrending();
 
+  bool login(std::string username, std::string password);
+
+  bool registerUser(std::string username, std::string password);
+
+  std::map<std::string, std::vector<Tweet*> > dmFeeds_; //DEBUG
    private:
   //Variables
   std::vector<std::pair<std::string, std::set<Tweet*> > > tags;
   std::map<std::string, User*> usrs;
-  std::map<std::string, std::vector<Tweet*> > dmFeeds_;
   Tweet* tweets_;
   int tweetSize_;
   int tweetMaxSize_;
@@ -76,7 +80,7 @@ class TwitEng
 
   //Functions
   User* findUser(std::string name);
-  void adduser(std::string name);
+  void adduser(std::string name, unsigned int hash);
   //Checks all following sets for users and adds
   //necessary users to followers
   void setallfollowers();
@@ -106,5 +110,9 @@ class TwitEng
     int& index, std::map<User*, std::pair<int, int> >& tarMap, 
     std::set<User*>& tarSet, std::stack<User*>& tarStack);
 
+  /*
+   * hashes a string to an unsigned int for the password
+   */
+  unsigned int hashPass(std::string password);
 };
 #endif

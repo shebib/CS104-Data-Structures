@@ -15,7 +15,7 @@ class User {
   /**
    * Constructor 
    */
-  User(std::string name);
+  User(std::string name, unsigned int passwordHash);
 
   /**
    * Destructor
@@ -81,6 +81,11 @@ class User {
    */
   std::vector<Tweet*> getFeed();
 
+  /**
+   * returns the hashed password
+   */
+  unsigned int getPass() const;
+
   /* You may add other member functions */
  private:
   /* Add any other data members or helper functions here  */
@@ -88,6 +93,7 @@ class User {
   std::set<User*> followers_;
   std::set<User*> following_;
   std::list<Tweet*> tweets_;
+  unsigned int passwordHash_;
 };
 
 #endif

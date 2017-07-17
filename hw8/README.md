@@ -1,7 +1,7 @@
-# HW 6
+# HW 8
 ### Daniel Shebib
 
-Twitter GUI, now with MergeSort and Strongly Connected Components (Tarjan's)
+Twitter GUI, now with a login screen and trending hashtags
 
 Contains:
 datetime.cpp: holds and outputs time info
@@ -10,12 +10,15 @@ twiteng.cpp: twitter engine, holds users, tweets, can search by hashtags, etc.
 user.cpp: user object. Holds name, followers, following, etc.
 twitdiag.cpp: QT GUI dialog
 msort.h: static functions/templates for mergeSort
+twitlogin.cpp: login dialog
+heap.h: heap data structure
 
 ## Compiling
 To compile, run make
 To clean, run make clean
-To rebuild Makefile, run qmake -project followed by qmake
+To rebuild Makefile, run qmake -project, add QMAKE_CXXFLAGS += -std=c++11
+to project file, then run qmake
 
 ## Syntax
-run ./hw6 [[twitter.dat]]
+run ./hw8 [[twitter.dat]]
 NOTE: twitter.dat must be in the correct format

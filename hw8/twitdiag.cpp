@@ -31,7 +31,6 @@ TwitDiag::TwitDiag(TwitEng* eng) : QDialog()
   createControls();
 
   //connect everything
-  connect(usrComboBox, SIGNAL(activated(const QString &)), this, SLOT(selectUser(const QString &)));
   connect(followButtonGroup, SIGNAL(buttonReleased(int)), this, SLOT(followUser(int)));
   connect(searchButton, SIGNAL(released()), this, SLOT(searchTweets()));
   connect(addTweetButton, SIGNAL(released()), this, SLOT(sendTweet()));
@@ -42,6 +41,9 @@ TwitDiag::TwitDiag(TwitEng* eng) : QDialog()
   connect(searchDiagQuitButton, SIGNAL(released()), this, SLOT(searchDiagQuit()));
   connect(connectButton, SIGNAL(released()), this, SLOT(saveComponents()));
   connect(refreshTrendingButton, SIGNAL(released()), this, SLOT(refreshTrending()));
+  connect(logoutButton, SIGNAL(released()), this, SLOT(hide()));
+  
+
 
   //add everything to main layout
   QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -60,12 +62,25 @@ TwitDiag::~TwitDiag()
   delete [] followButtonStack;
 }
 
+void TwitDiag::setLogin(QDialog* login)
+{
+  this->login = login;
+  connect(logoutButton, SIGNAL(released()), login, SLOT(show()));
+}
+
+void TwitDiag::setUser(std::string name)
+{
+  selectUser(QString::fromStdString(name));
+}
+
 void TwitDiag::selectUser(const QString& name)
 {
   currUser = name.toStdString();
   updateFeed();
   updateDMFeed();
   updateFollowButtons();
+  currUserLabel->setText(QString::fromStdString(currUser));
+
 }
 
 void TwitDiag::followUser(int i)
@@ -158,15 +173,13 @@ void TwitDiag::refreshTrending()
 
 void TwitDiag::createUserSelect()
 {
-  userSelectGroupbox = new QGroupBox(tr("Select User"));
-  usrComboBox = new QComboBox();
-  std::vector<std::string> names = eng->getUserNames();
-  for(std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
-  {
-    usrComboBox->addItem(QString::fromStdString(*it));
-  }
+  userSelectGroupbox = new QGroupBox();
+  userSelectGroupbox->setFlat(true);
+  currUserLabel = new QLabel(QString::fromStdString("Logged in as: " + currUser));
+  logoutButton = new QPushButton(tr("Logout"));
   QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(usrComboBox);
+  layout->addWidget(currUserLabel);
+  layout->addWidget(logoutButton);
   userSelectGroupbox->setLayout(layout);
 }
 

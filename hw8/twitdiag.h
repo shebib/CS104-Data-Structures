@@ -28,6 +28,8 @@ class TwitDiag : public QDialog
   public:
     TwitDiag(TwitEng* eng);
     ~TwitDiag();
+    void setLogin(QDialog* login);
+    void setUser(std::string name);
 
   public slots:
     void selectUser(const QString& name);
@@ -60,6 +62,7 @@ class TwitDiag : public QDialog
 
     //variables
     TwitEng* eng;
+    QDialog* login;
     std::vector<std::string> names;
     std::string currUser;
     
@@ -75,7 +78,8 @@ class TwitDiag : public QDialog
     QGroupBox* addTweetGroupbox;
     QGroupBox* controlsGroupbox;
 
-    QComboBox* usrComboBox;
+    QLabel* currUserLabel;
+    QPushButton* logoutButton;
     QStackedWidget** followButtonStack;
     QButtonGroup* followButtonGroup;
     QPushButton* searchButton;

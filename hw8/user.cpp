@@ -1,9 +1,10 @@
 #include "user.h"
 #include <algorithm>
 
-User::User(std::string name) 
+User::User(std::string name, unsigned int passwordHash) 
 {
   name_ = name;
+  passwordHash_ = passwordHash;
 }
 
 User::~User() {}
@@ -48,4 +49,9 @@ std::vector<Tweet*> User::getFeed()
   }
   MSort<Tweet*, TweetComp>::mergeSort(out, TweetComp()); 
   return out;
+}
+
+unsigned int User::getPass() const
+{
+  return passwordHash_;
 }

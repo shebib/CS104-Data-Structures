@@ -15,9 +15,9 @@ TwitEng::~TwitEng()
   }
 }
 
-void TwitEng::adduser(std::string name)
+void TwitEng::adduser(std::string name, unsigned int hash)
 {
-  User* usr = new User(name);
+  User* usr = new User(name, hash);
   usrs.insert(std::make_pair(name, usr));
 }
 
@@ -111,11 +111,7 @@ void TwitEng::addTweet(std::string& username, DateTime& dt, std::string& text)
     }
   }
   //add to DM feed
-  if(dmFeeds_.find(username) == dmFeeds_.end())
-  {
-    std::vector<Tweet*> add;
-    dmFeeds_.insert(std::make_pair(username, add));
-  }
+  
   if(tmp->isDM()) //add first @ to dmFeeds_
   {
     std::string dmname = tmp->text().substr(1, tmp->text().find(" ")-1);
@@ -164,9 +160,11 @@ bool TwitEng::parse(char* filename)
      ss.flush();
      ss.clear();
      ss.str(tmp);
-     std::string usr;
+     std::string usr = "";
+     unsigned int hash = 0;
      ss >> usr;
-     adduser(usr);
+     ss >> hash;
+     adduser(usr, hash);
      std::string follow;
      while(ss >>follow)
      {
@@ -186,6 +184,8 @@ bool TwitEng::parse(char* filename)
      ss.str(tmp);
      std::string usr;
      ss >> usr;
+     unsigned int hash = 0;
+     ss >> hash;
      std::string follow;
      while(ss >>follow)
      {
@@ -347,10 +347,10 @@ std::vector<std::string> TwitEng::getFollowing(std::string usr)
 
 const std::string TwitEng::getDMFeed(std::string name)
 {
-  MSort<Tweet*, TweetComp>::mergeSort(dmFeeds_.find(name)->second, TweetComp());
-  std::string out = "";
   if(dmFeeds_.find(name) == dmFeeds_.end())
     return "";
+  MSort<Tweet*, TweetComp>::mergeSort(dmFeeds_.find(name)->second, TweetComp());
+  std::string out = "";
   std::vector<Tweet*> dmOut = dmFeeds_.find(name)->second;
   std::stringstream ss;
   for(unsigned int i = 0; i < dmOut.size(); i++)
@@ -524,4 +524,49 @@ const std::vector<std::string> TwitEng::getTrending()
   return out;
 }
   
+bool TwitEng::login(std::string username, std::string password)
+{
+  if(usrs.find(username) == usrs.end())
+    return false;
+  if(password.length() > 8)
+    return false;
+  User* user = usrs.find(username)->second;
+  unsigned int hash = hashPass(password);
+  if(user->getPass() == hash)
+    return true;
+  else
+    return false;
+}
 
+unsigned int TwitEng::hashPass(std::string password)
+{
+  unsigned long long val = 0;
+  unsigned int len = password.length();
+  for(unsigned int i = 0; i < len; i++)
+  {
+    val += pow(128, len-i-1)*(int)password[i];
+  }
+  unsigned int wval[4];
+  for(int i = 0; i < 4; i++)
+  {
+    if(val == 0)
+    {
+      for(int j = i; j < 4; j++)
+      {
+        wval[3-j] = 0;
+      }
+    }
+    wval[3-i] = val % 65521;
+    val = val/65521;
+  }
+  return ((45912*wval[0]+35511*wval[1]+65169*wval[2]+4625*wval[3])%65521);
+}
+
+bool TwitEng::registerUser(std::string username, std::string password)
+{
+  if(usrs.find(username) != usrs.end())
+    return false;
+  unsigned int hash = hashPass(password);
+  adduser(username, hash);
+  return true;
+}
